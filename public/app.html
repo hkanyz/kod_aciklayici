@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Kod Açıklayıcı ve Asistan</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Markdown ve Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sol Taraf: Dosya Gezgini (File Explorer) -->
+        <aside class="file-explorer" id="file-explorer" style="display: none;">
+            <div class="explorer-header">
+                <h3>Proje Dosyaları</h3>
+                <button id="new-folder-btn" class="btn-icon" title="Yeni Klasör Yükle">📁</button>
+            </div>
+            <div class="file-list" id="file-list">
+                <!-- Dosyalar buraya eklenecek -->
+            </div>
+        </aside>
+
+        <!-- Orta Taraf: Açıklama Paneli -->
+        <main class="main-content">
+            <header>
+                <h1>AI Kod Açıklayıcı</h1>
+                <p>Proje klasörünüzü yükleyin, istediğiniz dosyayı satır satır Türkçe açıklayalım.</p>
+            </header>
+
+            <section class="upload-section" id="upload-section">
+                <input type="file" id="file-input" webkitdirectory directory multiple style="display: none;" />
+                <div class="upload-box" id="upload-box">
+                    <div class="icon">📁</div>
+                    <p>Proje klasörünüzü buraya sürükleyin veya <b>tıklayarak seçin</b></p>
+                </div>
+            </section>
+
+            <section class="explanation-section" id="explanation-section" style="display: none;">
+                <div class="content-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 id="file-name-display">Dosya Seçin</h2>
+                    
+                    <div class="line-filter" id="line-filter" style="display: none; gap: 10px; align-items: center;">
+                        <label for="min-line" style="font-size: 0.9rem; color: var(--text-muted);">Min:</label>
+                        <input type="number" id="min-line" min="1" placeholder="1" style="width: 60px; padding: 5px; border-radius: 4px; background: var(--chat-bg); border: 1px solid var(--panel-border); color: var(--text-main);">
+                        
+                        <label for="max-line" style="font-size: 0.9rem; color: var(--text-muted);">Max:</label>
+                        <input type="number" id="max-line" min="1" placeholder="Son" style="width: 60px; padding: 5px; border-radius: 4px; background: var(--chat-bg); border: 1px solid var(--panel-border); color: var(--text-main);">
+                        
+                        <button id="apply-filter-btn" class="btn-primary" style="padding: 5px 10px; font-size: 0.8rem;">Başlat</button>
+                    </div>
+                </div>
+                <!-- Kod açıklamalarının geleceği yer -->
+                <div class="explanation-content" id="explanation-content">
+                    <div class="empty-state">Sol menüden açıklanmasını istediğiniz bir dosyayı seçin.</div>
+                </div>
+                
+                <div id="continue-container" style="display: none; text-align: center; padding-top: 15px; margin-top: 15px; border-top: 1px solid var(--panel-border);">
+                    <button id="continue-btn" class="btn-primary" style="padding: 10px 20px; font-size: 1rem;">Sıradaki Bölümü Açıkla (Devam Et)</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Sağ Taraf: Chat Paneli -->
+        <aside class="chat-panel" id="chat-panel">
+            <div class="chat-header">
+                <h3>Asistan</h3>
+                <span class="status-dot"></span>
+            </div>
+            
+            <div class="chat-context" id="chat-context" style="display: none;">
+                <div class="context-label">Seçilen Bağlam:</div>
+                <div class="context-text" id="context-text">...</div>
+                <button class="clear-context" id="clear-context">✖</button>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai-message">
+                    Merhaba! Seçtiğiniz kod veya açıklama metni hakkında bana sorular sorabilirsiniz.
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Soranızı yazın..." disabled />
+                <button id="send-btn" disabled>Gönder</button>
+            </div>
+        </aside>
+
+        <!-- Ekranda beliren Soru Sor butonu (Tooltip) -->
+        <button id="tooltip-btn" class="tooltip-btn">Soru Sor</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
