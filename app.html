@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Kod Açıklayıcı ve Asistan</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Markdown ve Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- IndexedDB for saving file handles -->
+    <script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Activity Bar (VS Code Style) -->
+        <nav class="activity-bar" id="activity-bar">
+            <button id="toggle-explorer-btn" class="activity-btn active" title="Dosya Gezgini">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </button>
+            <div style="flex:1;"></div>
+            <button id="toggle-chat-btn" class="activity-btn active" title="AI Asistan">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </button>
+        </nav>
+
+        <!-- Sol Taraf: Dosya Gezgini (File Explorer) -->
+        <aside class="file-explorer active" id="file-explorer" style="display: none;">
+            <div class="explorer-header">
+                <h3>Proje Dosyaları</h3>
+                <button id="new-folder-btn" class="btn-icon" title="Yeni Klasör Yükle">📁</button>
+            </div>
+            <div class="file-list" id="file-list">
+                <!-- Dosyalar buraya eklenecek -->
+            </div>
+        </aside>
+
+        <!-- Orta Taraf: Açıklama Paneli -->
+        <main class="main-content" style="display: flex; flex-direction: row; padding: 0;">
+            
+            <!-- Sol Pane: AI Açıklayıcı -->
+            <div class="ai-pane" id="ai-pane" style="flex: 1 1 50%; min-width: 0; padding: 30px 40px; overflow-y: auto;">
+                <header>
+                    <h1>AI Kod Açıklayıcı</h1>
+                    <p>Proje klasörünüzü yükleyin, istediğiniz dosyayı satır satır Türkçe açıklayalım.</p>
+                </header>
+
+            <section class="upload-section" id="upload-section">
+                <input type="file" id="file-input" webkitdirectory directory multiple style="display: none;" />
+                <div class="upload-box" id="upload-box">
+                    <div class="icon">📁</div>
+                    <p>Proje klasörünüzü seçmek için <b>buraya tıklayın</b></p>
+                </div>
+                
+                <div id="restore-section" style="display: none; text-align: center; margin-top: 20px;">
+                    <p style="color: var(--text-muted); margin-bottom: 10px;">Önceki çalıştığınız projeye devam edebilirsiniz:</p>
+                    <button id="restore-btn" class="btn-primary" style="padding: 10px 20px;">Önceki Projeyi Geri Yükle</button>
+                </div>
+            </section>
+
+            <section class="explanation-section" id="explanation-section" style="display: none;">
+                <div class="content-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 id="file-name-display">Dosya Seçin</h2>
+                    
+                    <div class="line-filter" id="line-filter" style="display: none; gap: 10px; align-items: center;">
+                        <label for="min-line" style="font-size: 0.9rem; color: var(--text-muted);">Min:</label>
+                        <input type="number" id="min-line" min="1" placeholder="1" style="width: 60px; padding: 5px; border-radius: 4px; background: var(--chat-bg); border: 1px solid var(--panel-border); color: var(--text-main);">
+                        
+                        <label for="max-line" style="font-size: 0.9rem; color: var(--text-muted);">Max:</label>
+                        <input type="number" id="max-line" min="1" placeholder="Son" style="width: 60px; padding: 5px; border-radius: 4px; background: var(--chat-bg); border: 1px solid var(--panel-border); color: var(--text-main);">
+                        
+                        <button id="apply-filter-btn" class="btn-primary" style="padding: 5px 10px; font-size: 0.8rem;">Başlat</button>
+                    </div>
+                </div>
+                <!-- Kod açıklamalarının geleceği yer -->
+                <div class="explanation-content" id="explanation-content">
+                    <div class="empty-state">Sol menüden açıklanmasını istediğiniz bir dosyayı seçin.</div>
+                </div>
+                
+                <div id="continue-container" style="display: none; text-align: center; padding-top: 15px; margin-top: 15px; border-top: 1px solid var(--panel-border);">
+                    <button id="continue-btn" class="btn-primary" style="padding: 10px 20px; font-size: 1rem;">Sıradaki Bölümü Açıkla (Devam Et)</button>
+                </div>
+            </section>
+            </div> <!-- End AI Pane -->
+
+            <!-- Sağ Pane: Kod Editörü -->
+            <div class="editor-pane" id="editor-pane" style="flex: 1 1 50%; min-width: 0; display: none; flex-direction: column; border-left: 1px solid var(--panel-border); background-color: var(--bg-color);">
+                <!-- Editor Tabs Bar -->
+                <div class="editor-tabs-bar" id="editor-tabs-bar">
+                    <!-- Sekmeler buraya gelecek -->
+                </div>
+                
+                <!-- Raw Editor View -->
+                <div class="editor-view-section" id="editor-view-section" style="display: flex; flex: 1; overflow: auto;">
+                    <pre style="flex: 1 1 auto; min-width: 0; margin: 0;"><code id="editor-code-content" class="hljs" style="height: 100%;"></code></pre>
+                </div>
+            </div> <!-- End Editor Pane -->
+        </main>
+
+        <!-- Sağ Taraf: Chat Paneli -->
+        <aside class="chat-panel" id="chat-panel">
+            <div class="chat-header">
+                <h3>Asistan</h3>
+                <span class="status-dot"></span>
+            </div>
+            
+            <div class="chat-context" id="chat-context" style="display: none;">
+                <div class="context-label">Seçilen Bağlam:</div>
+                <div class="context-text" id="context-text">...</div>
+                <button class="clear-context" id="clear-context">✖</button>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai-message">
+                    Merhaba! Seçtiğiniz kod veya açıklama metni hakkında bana sorular sorabilirsiniz.
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Soranızı yazın..." disabled />
+                <button id="send-btn" disabled>Gönder</button>
+            </div>
+        </aside>
+
+        <!-- Ekranda beliren Soru Sor butonu (Tooltip) -->
+        <button id="tooltip-btn" class="tooltip-btn">Soru Sor</button>
+    </div>
+
+    <!-- Sağ Tık (Context) Menüsü -->
+    <div id="context-menu" class="context-menu" style="display: none;">
+        <div class="context-menu-item" id="menu-inspect">📄 İncele (Oku)</div>
+        <div class="context-menu-item" id="menu-explain">🤖 Yapay Zekaya Açıklat</div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
