@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Kod Açıklayıcı | Anasayfa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Premium Light Theme based on new palette */
+            --bg-color: #BCC1DB; /* Light Purple/Blue */
+            --panel-bg: rgba(255, 255, 255, 0.7); /* Glassmorphism base */
+            --text-main: #2D3748;
+            --text-light: #1A202C;
+            --text-muted: #4A5568;
+            --accent: #F8D47D; /* Yellow/Orange */
+            --accent-glow: rgba(248, 212, 125, 0.6);
+            --gradient: linear-gradient(135deg, #F8D47D, #DCE08C);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            /* Subliminal arkaplan ışıkları */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(160, 242, 185, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(189, 235, 153, 0.4) 0%, transparent 50%);
+        }
+
+        /* Navbar */
+        nav {
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-light);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo span {
+            color: var(--accent);
+        }
+
+        /* Hero Section */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .badge {
+            background: rgba(160, 242, 185, 0.3);
+            color: #2D3748;
+            padding: 10px 24px;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(160, 242, 185, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: var(--text-light);
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            max-width: 900px;
+            letter-spacing: -1.5px;
+        }
+
+        h1 .highlight {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            font-size: 1.25rem;
+            color: var(--text-main);
+            max-width: 700px;
+            margin-bottom: 4rem;
+            line-height: 1.6;
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            width: 100%;
+            margin-bottom: 5rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 2.5rem;
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            text-align: left;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #A0F2B9;
+            box-shadow: 0 12px 40px rgba(160, 242, 185, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* CTA Button */
+        .cta-container {
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--accent);
+            color: #2D3748;
+            font-weight: 800;
+            font-size: 1.3rem;
+            padding: 1.2rem 4rem;
+            border-radius: 999px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px var(--accent-glow);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            letter-spacing: 1px;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--gradient);
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 15px 35px var(--accent-glow);
+            color: #1A202C;
+        }
+
+        .cta-button:hover::before {
+            opacity: 1;
+        }
+
+        /* Animasyonlar */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-up {
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="animate-up">
+        <div class="logo">🚀 AI<span>Code</span>Explainer</div>
+    </nav>
+
+    <main class="hero">
+        <div class="badge animate-up delay-1">✨ Llama-3.3 Destekli Akıllı Kod Asistanı</div>
+        
+        <h1 class="animate-up delay-1">
+            Kodlarınızı <span class="highlight">Anlamlı</span> Kılın
+        </h1>
+        
+        <p class="subtitle animate-up delay-2">
+            Karmaşık projelerinizi tek bir tıkla yükleyin. Çok dilli akıllı parçalama (chunking) teknolojisi ile yapay zeka kodlarınızı mantıksal bloklarına ayırarak size satır satır, profesyonel bir eğitmen gibi Türkçe anlatsın.
+        </p>
+
+        <div class="cta-container animate-up delay-3">
+            <a href="app.html" class="cta-button">HEMEN BAŞLA</a>
+        </div>
+
+        <div class="features animate-up delay-4">
+            <div class="feature-card">
+                <div class="feature-icon">📂</div>
+                <h3>Tüm Projeyi Yükleyin</h3>
+                <p>Projeyi sürükleyip bırakın. Dosya gezgini sayesinde klasörler arasında anında geçiş yapın.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>Modüler Parçalama</h3>
+                <p>HTML, Python, C ve JS tabanlı dillerin hepsini kendi özgün yapılarına göre güvenle ayırır.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Bağlamsal Sohbet</h3>
+                <p>Anlamadığınız satırı seçin ve yapay zekaya anında o kod parçasıyla ilgili özel sorular sorun.</p>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
